@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/componets/contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/componets/ui/button';
-import { Input } from '@/componets/ui/input';
-import { Label } from '@/componets/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/componets/ui/card';
-import { toast } from '@/componets/ui/use-toast';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { toast } from '../ui/use-toast';
 
 function Login() {
   const [email, setEmail] = useState('');

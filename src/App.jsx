@@ -1,89 +1,56 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
-import { AuthProvider, useAuth } from '@/componets/contexts/AuthContext';
-import { ThemeProvider } from '@/componets/contexts/ThemeContext';
-import { NotificationProvider } from '@/componets/contexts/NotificationContext';
-import { Toaster } from '@/componets/ui/toaster';
-import Login from '@/componets/pages/Login';
-import Dashboard from '@/componets/pages/Dashboard';
-import Indicacoes from '@/componets/pages/Indicacoes';
-import Pagamentos from '@/componets/pages/Pagamentos';
-import Perfil from '@/componets/pages/Perfil';
-import Gestao from '@/componets/pages/Gestao';
-import Configuracoes from '@/componets/pages/Configuracoes';
-import Layout from '@/componets/Layout';
-// import PixVendedores from '@/componets/gestao/PixVendedores.jsx';
-
-function ProtectedRoute({ children, requiredRole }) {
-  const { user } = useAuth();
-  
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return children;
-}
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './componets/contexts/AuthContext';
+import Layout from './componets/Layout';
+import Dashboard from './componets/pages/Dashboard';
+import Login from './componets/pages/Login';
+import Indicacoes from './componets/pages/Indicacoes';
+import Gestao from './componets/pages/Gestao';
+import Pagamentos from './componets/pages/Pagamentos';
+import Perfil from './componets/pages/Perfil';
+import Configuracoes from './componets/pages/Configuracoes';
+import { Toaster } from './componets/ui/toaster';
+import { NotificationProvider } from './componets/contexts/NotificationContext';
+import { ThemeProvider } from './componets/contexts/ThemeContext';
 
 function AppRoutes() {
-  const { user } = useAuth();
-  
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-luxury">
+        <div className="text-golden text-xl">Carregando...</div>
+      </div>
+    );
+  }
+
   return (
-    <Routes>
-      <Route 
-        path="/login" 
-        element={user ? <Navigate to="/dashboard" replace /> : <Login />} 
-      />
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="indicacoes" element={<ProtectedRoute><Indicacoes /></ProtectedRoute>} />
-        <Route path="pagamentos" element={<ProtectedRoute><Pagamentos /></ProtectedRoute>} />
-        <Route path="perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
-        <Route 
-          path="gestao" 
-          element={
-            <ProtectedRoute requiredRole="gestor">
-              <Gestao />
-            </ProtectedRoute>
-          } 
-        >
-          {/* <Route path="pix" element={<ProtectedRoute requiredRole="gestor"><PixVendedores /></ProtectedRoute>} /> */}
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="login" element={<Login />} />
+          <Route path="indicacoes" element={<Indicacoes />} />
+          <Route path="gestao" element={<Gestao />} />
+          <Route path="pagamentos" element={<Pagamentos />} />
+          <Route path="perfil" element={<Perfil />} />
+          <Route path="configuracoes" element={<Configuracoes />} />
         </Route>
-        <Route 
-          path="configuracoes" 
-          element={
-            <ProtectedRoute requiredRole="gestor">
-              <Configuracoes />
-            </ProtectedRoute>
-          } 
-        />
-      </Route>
-    </Routes>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <Router>
-            <Helmet>
-              <title>Sistema de Indicações</title>
-              <meta name="description" content="Sistema completo de gestão de indicações com controle de comissões e pagamentos" />
-              <meta property="og:title" content="Sistema de Indicações" />
-              <meta property="og:description" content="Sistema completo de gestão de indicações com controle de comissões e pagamentos" />
-            </Helmet>
-            <AppRoutes />
-            <Toaster />
-          </Router>
-        </NotificationProvider>
-      </AuthProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <AppRoutes />
+          <Toaster />
+        </AuthProvider>
+      </NotificationProvider>
     </ThemeProvider>
   );
 }
