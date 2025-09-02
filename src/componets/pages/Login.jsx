@@ -37,34 +37,70 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="max-w-md w-full glass-effect">
+    <div className="min-h-screen flex items-center justify-center bg-dark-luxury p-4 animate-float">
+      <Card variant="futuristic" className="max-w-md w-full futuristic-glow">
         <CardHeader className="text-center">
-          <CardTitle>{isSignUp ? 'Cadastro' : 'Login'}</CardTitle>
-          <CardDescription>{isSignUp ? 'Crie sua conta' : 'Entre na sua conta'}</CardDescription>
+          <CardTitle className="futuristic-gradient-text text-3xl font-bold mb-2">
+            {isSignUp ? 'CADASTRO' : 'LOGIN'}
+          </CardTitle>
+          <CardDescription className="text-golden/80">
+            {isSignUp ? 'Crie sua conta futurista' : 'Entre na sua conta premium'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {isSignUp && (
               <div>
-                <Label htmlFor="name">Nome</Label>
-                <Input id="name" value={name} onChange={e => setName(e.target.value)} required />
+                <Label htmlFor="name" className="text-golden font-semibold">Nome</Label>
+                <Input
+                  id="name"
+                  variant="futuristic"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  required
+                  placeholder="Digite seu nome"
+                />
               </div>
             )}
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+              <Label htmlFor="email" className="text-golden font-semibold">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                variant="futuristic"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                placeholder="Digite seu email"
+              />
             </div>
             <div>
-              <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+              <Label htmlFor="password" className="text-golden font-semibold">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                variant="futuristic"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                placeholder="Digite sua senha"
+              />
             </div>
-            <Button type="submit" className="w-full gradient-bg" disabled={loading}>
+            <Button
+              type="submit"
+              variant="futuristic"
+              className="w-full h-12 text-lg font-bold futuristic-glow"
+              disabled={loading}
+            >
               {loading ? (isSignUp ? 'Cadastrando...' : 'Entrando...') : (isSignUp ? 'Cadastrar' : 'Entrar')}
             </Button>
           </form>
-          <div className="mt-4 text-center">
-            <button className="text-sm text-primary underline" onClick={() => setIsSignUp(!isSignUp)} type="button">
+          <div className="mt-6 text-center">
+            <button
+              className="text-golden hover:text-golden/80 underline underline-offset-4 transition-colors duration-300"
+              onClick={() => setIsSignUp(!isSignUp)}
+              type="button"
+            >
               {isSignUp ? 'Já tem conta? Faça login' : 'Não tem conta? Cadastre-se'}
             </button>
           </div>

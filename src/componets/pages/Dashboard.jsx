@@ -265,10 +265,10 @@ function Dashboard() {
       <Helmet>
         <title>Dashboard - Sistema de Indicações</title>
       </Helmet>
-      <div className="p-6 space-y-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Bem-vindo, {user.name}!</p>
+      <div className="min-h-screen bg-dark-luxury p-6 space-y-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="animate-float">
+          <h1 className="futuristic-gradient-text text-4xl font-bold mb-2">DASHBOARD</h1>
+          <p className="text-golden/80 text-lg">Bem-vindo ao futuro, {user.name}!</p>
         </motion.div>
         
         {user.role === 'vendedor' ? renderVendedorDashboard() : renderGestorDashboard()}

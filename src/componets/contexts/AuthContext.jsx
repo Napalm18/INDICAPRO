@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/customSupabaseClient';
+import databaseService from '../lib/databaseService';
 import { toast } from '@/componets/ui/use-toast'; // Ajuste se necessário
 
 const AuthContext = createContext();
@@ -12,19 +13,15 @@ export const AuthProvider = ({ children }) => {
   const handleSession = useCallback(async (currentSession) => {
     setSession(currentSession);
     if (currentSession?.user) {
-      const { data: profile, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', currentSession.user.id)
-        .single();
-
-      if (error) {
-        setUser (null);
-      } else {
-        setUser (profile);
+      try {
+        const profile = await databaseService.getUserById(currentSession.user.id);
+        setUser(profile);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        setUser(null);
       }
     } else {
-      setUser (null);
+      setUser(null);
     }
     setLoading(false);
   }, []);
@@ -54,8 +51,14 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (data.user) {
-      const { error: insertError } = await supabase.from('users').insert([{ id: data.user.id, name, email, role }]);
-      if (insertError) {
+      try {
+        await databaseService.createUser({
+          id: data.user.id,
+          name,
+          email,
+          role
+        });
+      } catch (insertError) {
         toast({ variant: 'destructive', title: 'Erro ao salvar perfil', description: insertError.message });
         return { error: insertError };
       }
@@ -87,14 +90,15 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser  = useCallback(async (userData) => {
     if (!user) return { error: { message: 'Usuário não autenticado.' } };
-    const { data, error } = await supabase.from('users').update(userData).eq('id', user.id).select().single();
-    if (error) {
+    try {
+      const updatedUser = await databaseService.updateUser(user.id, userData);
+      setUser(updatedUser);
+      toast({ title: 'Perfil atualizado!', description: 'Suas informações foram salvas.' });
+      return { data: updatedUser, error: null };
+    } catch (error) {
       toast({ variant: 'destructive', title: 'Erro ao atualizar perfil', description: error.message });
       return { error };
     }
-    setUser (data);
-    toast({ title: 'Perfil atualizado!', description: 'Suas informações foram salvas.' });
-    return { data, error: null };
   }, [user]);
 
   const value = useMemo(() => ({ user, session, loading, signUp, signIn, signOut, updateUser  }), [user, session, loading, signUp, signIn, signOut, updateUser ]);

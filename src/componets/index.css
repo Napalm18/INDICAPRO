@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 47.9 95.8% 53.1%; /* Dourado */
-    --primary-foreground: 240 10% 3.9%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --background: 0 0% 3%; /* Preto profundo futurista */
+    --foreground: 0 0% 98%;
+    --card: 0 0% 6%; /* Preto ligeiramente mais claro */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 45 86% 83%; /* Dourado vibrante futurista */
+    --primary-foreground: 0 0% 3%;
+    --secondary: 0 0% 12%; /* Preto acinzentado */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 45 86% 83%; /* Dourado */
+    --accent-foreground: 0 0% 3%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 47.9 95.8% 53.1%;
-    --radius: 0.5rem;
+    --border: 0 0% 15%;
+    --input: 0 0% 10%;
+    --ring: 45 86% 83%;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -55,7 +55,30 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--background);
+    background-image:
+      radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(255, 140, 0, 0.03) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+
+  /* Scrollbar futurista */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #FFD700, #B8860B);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #FFA500, #FF8C00);
   }
 }
 
@@ -76,4 +99,162 @@
 
 .progress-bar {
   background: linear-gradient(90deg, #e6b800 0%, #b38f00 100%);
+}
+
+/* Componentes Futuristas */
+@layer components {
+  .futuristic-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 26, 26, 0.9) 100%);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 215, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .futuristic-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 215, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .futuristic-button {
+    @apply relative overflow-hidden rounded-lg font-semibold transition-all duration-300;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  }
+
+  .futuristic-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .futuristic-button:hover::before {
+    left: 100%;
+  }
+
+  .futuristic-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  }
+
+  .futuristic-input {
+    @apply bg-input/50 border-border/50 rounded-lg backdrop-blur-sm;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(26, 26, 26, 0.8) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .futuristic-input:focus {
+    border-color: #FFD700;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(26, 26, 26, 0.9) 100%);
+  }
+
+  .futuristic-gradient-text {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .futuristic-glow {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .futuristic-border {
+    position: relative;
+  }
+
+  .futuristic-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+  }
+
+  .animate-pulse-golden {
+    animation: pulse-golden 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-golden {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+}
+
+/* Utilitários adicionais */
+.glass-effect {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.golden-gradient {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+}
+
+.text-golden {
+  color: #FFD700;
+}
+
+.border-golden {
+  border-color: #FFD700;
+}
+
+.shadow-golden {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.bg-dark-luxury {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+.bg-card-luxury {
+  background: linear-gradient(135deg, #111111 0%, #1f1f1f 100%);
 }
