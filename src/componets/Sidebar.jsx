@@ -13,9 +13,9 @@ import {
   Upload,
   Image as ImageIcon
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNotification } from '@/contexts/NotificationContext';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '@/componets/contexts/AuthContext';
+import { useNotification } from '@/componets/contexts/NotificationContext';
+import { Button } from '@/componets/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +23,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.jsx";
-import { toast } from '@/components/ui/use-toast';
+} from "@/componets/ui/dropdown-menu.jsx";
+import { toast } from '@/componets/ui/use-toast';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['gestor', 'vendedor'] },

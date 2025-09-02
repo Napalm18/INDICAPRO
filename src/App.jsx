@@ -1,19 +1,19 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import { NotificationProvider } from '@/contexts/NotificationContext';
-import { Toaster } from '@/components/ui/toaster';
-import Login from '@/pages/Login';
-import Dashboard from '@/pages/Dashboard';
-import Indicacoes from '@/pages/Indicacoes';
-import Pagamentos from '@/pages/Pagamentos';
-import Perfil from '@/pages/Perfil';
-import Gestao from '@/pages/Gestao';
-import Configuracoes from '@/pages/Configuracoes';
-import Layout from '@/components/Layout';
-import PixVendedores from '@/components/gestao/PixVendedores';
+import { AuthProvider, useAuth } from '@/componets/contexts/AuthContext';
+import { ThemeProvider } from '@/componets/contexts/ThemeContext';
+import { NotificationProvider } from '@/componets/contexts/NotificationContext';
+import { Toaster } from '@/componets/ui/toaster';
+import Login from '@/componets/pages/Login';
+import Dashboard from '@/componets/pages/Dashboard';
+import Indicacoes from '@/componets/pages/Indicacoes';
+import Pagamentos from '@/componets/pages/Pagamentos';
+import Perfil from '@/componets/pages/Perfil';
+import Gestao from '@/componets/pages/Gestao';
+import Configuracoes from '@/componets/pages/Configuracoes';
+import Layout from '@/componets/Layout';
+// import PixVendedores from '@/componets/gestao/PixVendedores.jsx';
 
 function ProtectedRoute({ children, requiredRole }) {
   const { user } = useAuth();
@@ -52,7 +52,7 @@ function AppRoutes() {
             </ProtectedRoute>
           } 
         >
-          <Route path="pix" element={<ProtectedRoute requiredRole="gestor"><PixVendedores /></ProtectedRoute>} />
+          {/* <Route path="pix" element={<ProtectedRoute requiredRole="gestor"><PixVendedores /></ProtectedRoute>} /> */}
         </Route>
         <Route 
           path="configuracoes" 

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
-import { 
-  DollarSign, 
-  Users, 
-  CheckCircle, 
-  Clock, 
+import { useAuth } from '@/componets/contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
+import { Button } from '@/componets/ui/button';
+import { Input } from '@/componets/ui/input';
+import { Progress } from '@/componets/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componets/ui/select';
+import { cn } from '@/componets/lib/utils';
+import {
+  DollarSign,
+  Users,
+  CheckCircle,
+  Clock,
   XCircle,
   Calculator,
   Gift,
@@ -21,8 +21,8 @@ import {
   Calendar,
   Trash2
 } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
-import { useNotification } from '@/contexts/NotificationContext';
+import { toast } from '@/componets/ui/use-toast';
+import { useNotification } from '@/componets/contexts/NotificationContext';
 
 function Dashboard() {
   const { user } = useAuth();

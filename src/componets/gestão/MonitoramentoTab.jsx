@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/componets/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/componets/ui/avatar';
 import { Wifi, WifiOff } from 'lucide-react';
 
 function MonitoramentoTab() {

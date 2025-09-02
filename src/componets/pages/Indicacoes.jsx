@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { useAuth } from '@/componets/contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
+import { Button } from '@/componets/ui/button';
+import { Input } from '@/componets/ui/input';
+import { Label } from '@/componets/ui/label';
+import { Badge } from '@/componets/ui/badge';
+import { Checkbox } from '@/componets/ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/componets/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/componets/ui/tabs';
+import {
   Plus, Search, Download, Trash2, CheckCircle, XCircle, Clock, Phone, User as UserIcon, RefreshCw, AlertTriangle
 } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
-import { useNotification } from '@/contexts/NotificationContext';
+import { toast } from '@/componets/ui/use-toast';
+import { useNotification } from '@/componets/contexts/NotificationContext';
 
 function Indicacoes() {
   const { user } = useAuth();

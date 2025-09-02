@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import Sidebar from '@/components/Sidebar';
+import { useAuth } from '@/componets/contexts/AuthContext';
+import Sidebar from '@/componets/Sidebar';
 
 function Layout() {
   const { user } = useAuth();

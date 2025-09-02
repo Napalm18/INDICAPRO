@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
+import { Button } from '@/componets/ui/button';
+import { Input } from '@/componets/ui/input';
+import { Label } from '@/componets/ui/label';
+import { Checkbox } from '@/componets/ui/checkbox';
 import { Target, DollarSign, Save, Gift, Sparkles } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/componets/ui/use-toast';
 
 function MetasTab() {
   const [metas, setMetas] = useState({ mensal: 10, anual: 120, bonusMensal: 500, bonusAnual: 2000 });
