@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/componets/lib/utils';
+import { cn } from '../../lib/utils';
 
 const Card = React.forwardRef(({ className, variant = 'default', ...props }, ref) => (
   <div

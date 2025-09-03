@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/componets/ui/tabs';
-import UsersTab from '@/componets/gestão/UsersTab';
-import MetasTab from '@/componets/gestão/MetasTab';
-import MonitoramentoTab from '@/componets/gestão/MonitoramentoTab';
-import PixVendedores from '@/componets/gestão/PixVendedores';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import UsersTab from '../gestão/UsersTab';
+import MetasTab from '../gestão/MetasTab';
+import MonitoramentoTab from '../gestão/MonitoramentoTab';
+import PixVendedores from '../gestão/PixVendedores';
 
 function Gestao() {
   return (

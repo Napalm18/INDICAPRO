@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
-import { Button } from '@/componets/ui/button';
-import { Input } from '@/componets/ui/input';
-import { Label } from '@/componets/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componets/ui/select';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/componets/ui/dialog';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Plus, Trash2, Users } from 'lucide-react';
-import { toast } from '@/componets/ui/use-toast';
+import { toast } from '../ui/use-toast';
 
 function UsersTab() {
   const [users, setUsers] = useState([]);

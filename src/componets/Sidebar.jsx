@@ -13,9 +13,9 @@ import {
   Upload,
   Image as ImageIcon
 } from 'lucide-react';
-import { useAuth } from '@/componets/contexts/AuthContext';
-import { useNotification } from '@/componets/contexts/NotificationContext';
-import { Button } from '@/componets/ui/button';
+import { useAuth } from './contexts/AuthContext';
+import { useNotification } from './contexts/NotificationContext';
+import { Button } from './ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,8 +23,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/componets/ui/dropdown-menu.jsx";
-import { toast } from '@/componets/ui/use-toast';
+} from "./ui/dropdown-menu.jsx";
+import { toast } from './ui/use-toast';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', roles: ['gestor', 'vendedor'] },
@@ -36,14 +36,14 @@ const menuItems = [
 ];
 
 function Sidebar() {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const { notifications, clearNotifications } = useNotification();
   const navigate = useNavigate();
   const [logo, setLogo] = useState(localStorage.getItem('logo'));
   const fileInputRef = useRef(null);
 
   const handleLogout = () => {
-    logout();
+    signOut();
     navigate('/login');
   };
 
