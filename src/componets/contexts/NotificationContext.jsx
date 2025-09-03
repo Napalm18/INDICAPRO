@@ -1,40 +1,52 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/customSupabaseClient';
+import databaseService from '../lib/databaseService';
+import { useAuth } from './AuthContext';
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState({});
+  const { user } = useAuth();
 
   const loadNotifications = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getSession();
     if (user) {
-      const { data, error } = await supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-      if (!error) setNotifications(prev => ({ ...prev, [user.id]: data }));
+      try {
+        const data = await databaseService.getNotificationsByUserId(user.id);
+        setNotifications(prev => ({ ...prev, [user.id]: data }));
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      }
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     loadNotifications();
-    const channel = supabase.channel('public:notifications')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => loadNotifications())
-      .subscribe();
-    return () => supabase.removeChannel(channel);
   }, [loadNotifications]);
 
   const addNotification = useCallback(async (userId, message) => {
-    const { data, error } = await supabase.from('notifications').insert([{ user_id: userId, message, read: false }]).select().single();
-    if (!error) {
+    try {
+      const data = await databaseService.createNotification({
+        user_id: userId,
+        message,
+        read: false,
+        created_at: new Date().toISOString()
+      });
       setNotifications(prev => {
         const userNotifs = prev[userId] || [];
         return { ...prev, [userId]: [data, ...userNotifs] };
       });
+    } catch (error) {
+      console.error('Error adding notification:', error);
     }
   }, []);
 
   const clearNotifications = useCallback(async (userId) => {
-    const { error } = await supabase.from('notifications').delete().eq('user_id', userId);
-    if (!error) setNotifications(prev => ({ ...prev, [userId]: [] }));
+    try {
+      await databaseService.deleteNotificationsByUserId(userId);
+      setNotifications(prev => ({ ...prev, [userId]: [] }));
+    } catch (error) {
+      console.error('Error clearing notifications:', error);
+    }
   }, []);
 
   return (

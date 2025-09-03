@@ -134,6 +134,43 @@ export const databaseService = {
       console.error('Error updating comissoes:', error);
       throw error;
     }
+  },
+
+  // Notifications operations
+  async getNotificationsByUserId(userId) {
+    try {
+      const result = await sql`
+        SELECT * FROM notifications
+        WHERE user_id = ${userId}
+        ORDER BY created_at DESC
+      `;
+      return result;
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      throw error;
+    }
+  },
+
+  async createNotification(notificationData) {
+    try {
+      const result = await sql`
+        INSERT INTO notifications ${sql(notificationData)}
+        RETURNING *
+      `;
+      return result[0];
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      throw error;
+    }
+  },
+
+  async deleteNotificationsByUserId(userId) {
+    try {
+      await sql`DELETE FROM notifications WHERE user_id = ${userId}`;
+    } catch (error) {
+      console.error('Error deleting notifications:', error);
+      throw error;
+    }
   }
 };
 

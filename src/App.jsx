@@ -12,6 +12,7 @@ import Configuracoes from './componets/pages/Configuracoes';
 import { Toaster } from './componets/ui/toaster';
 import { NotificationProvider } from './componets/contexts/NotificationContext';
 import { ThemeProvider } from './componets/contexts/ThemeContext';
+import { AIErrorBoundary } from './lib/errorHandler';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -44,14 +45,16 @@ function AppRoutes() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <NotificationProvider>
-        <AuthProvider>
-          <AppRoutes />
-          <Toaster />
-        </AuthProvider>
-      </NotificationProvider>
-    </ThemeProvider>
+    <AIErrorBoundary>
+      <ThemeProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <AppRoutes />
+            <Toaster />
+          </AuthProvider>
+        </NotificationProvider>
+      </ThemeProvider>
+    </AIErrorBoundary>
   );
 }
 

@@ -1,5 +1,5 @@
 import { neon } from '@netlify/neon';
 
-const sql = neon(process.env.NETLIFY_DATABASE_URL);
+const sql = neon(); // automatically uses env NETLIFY_DATABASE_URL
 
 export default sql;

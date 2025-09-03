@@ -1,94 +1,100 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { supabase } from '../lib/customSupabaseClient';
 import databaseService from '../lib/databaseService';
 import { toast } from '../ui/use-toast';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser ] = useState(null);
+  const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const handleSession = useCallback(async (currentSession) => {
-    setSession(currentSession);
-    if (currentSession?.user) {
-      try {
-        const profile = await databaseService.getUserById(currentSession.user.id);
-        setUser(profile);
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-        setUser(null);
+  // Mock auth functions for development (replace with proper auth later)
+  const mockSignUp = async (email, password, name, role = 'vendedor') => {
+    try {
+      // Check if user already exists
+      const existingUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      const existingUser = existingUsers.find(u => u.email === email);
+
+      if (existingUser) {
+        toast({ variant: 'destructive', title: 'Erro no cadastro', description: 'Usuário já existe' });
+        return { error: { message: 'Usuário já existe' } };
       }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-  }, []);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleSession(session);
-    });
+      // Create user in database
+      const newUser = await databaseService.createUser({
+        id: Date.now().toString(),
+        name,
+        email,
+        role
+      });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      handleSession(session);
-    });
+      // Store in localStorage for mock auth
+      const userData = { id: newUser.id, email, password, name, role };
+      existingUsers.push(userData);
+      localStorage.setItem('mock_users', JSON.stringify(existingUsers));
+      localStorage.setItem('current_user', JSON.stringify(userData));
 
-    return () => subscription.unsubscribe();
-  }, [handleSession]);
-
-  const signUp = useCallback(async (email, password, name, role = 'vendedor') => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name, role } }
-    });
-
-    if (error) {
+      setUser(newUser);
+      setSession({ user: newUser });
+      toast({ title: 'Cadastro realizado com sucesso!', description: 'Você pode fazer login agora.' });
+      return { data: { user: newUser }, error: null };
+    } catch (error) {
       toast({ variant: 'destructive', title: 'Erro no cadastro', description: error.message });
       return { error };
     }
+  };
 
-    if (data.user) {
-      try {
-        await databaseService.createUser({
-          id: data.user.id,
-          name,
-          email,
-          role
-        });
-      } catch (insertError) {
-        toast({ variant: 'destructive', title: 'Erro ao salvar perfil', description: insertError.message });
-        return { error: insertError };
+  const mockSignIn = async (email, password) => {
+    try {
+      const users = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      const userData = users.find(u => u.email === email && u.password === password);
+
+      if (!userData) {
+        toast({ variant: 'destructive', title: 'Erro no login', description: 'Credenciais inválidas' });
+        return { error: { message: 'Credenciais inválidas' } };
       }
-    }
 
-    toast({ title: 'Cadastro realizado com sucesso!', description: 'Você pode fazer login agora.' });
-    return { data, error: null };
-  }, []);
+      // Get full user data from database
+      const dbUser = await databaseService.getUserById(userData.id);
+      localStorage.setItem('current_user', JSON.stringify(userData));
 
-  const signIn = useCallback(async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
+      setUser(dbUser);
+      setSession({ user: dbUser });
+      return { data: { user: dbUser }, error: null };
+    } catch (error) {
       toast({ variant: 'destructive', title: 'Erro no login', description: error.message });
+      return { error };
     }
-    return { data, error };
-  }, []);
+  };
 
-  const signOut = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({ variant: 'destructive', title: 'Erro ao sair', description: error.message });
+  const mockSignOut = async () => {
+    localStorage.removeItem('current_user');
+    setUser(null);
+    setSession(null);
+    toast({ title: 'Desconectado', description: 'Você saiu da sua conta.' });
+    return { error: null };
+  };
+
+  useEffect(() => {
+    // Check for existing session on app load
+    const currentUser = localStorage.getItem('current_user');
+    if (currentUser) {
+      const userData = JSON.parse(currentUser);
+      databaseService.getUserById(userData.id).then(dbUser => {
+        setUser(dbUser);
+        setSession({ user: dbUser });
+        setLoading(false);
+      }).catch(() => {
+        localStorage.removeItem('current_user');
+        setLoading(false);
+      });
     } else {
-      setUser (null);
-      setSession(null);
-      toast({ title: 'Desconectado', description: 'Você saiu da sua conta.' });
+      setLoading(false);
     }
-    return { error };
   }, []);
 
-  const updateUser  = useCallback(async (userData) => {
+  const updateUser = useCallback(async (userData) => {
     if (!user) return { error: { message: 'Usuário não autenticado.' } };
     try {
       const updatedUser = await databaseService.updateUser(user.id, userData);
@@ -101,7 +107,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const value = useMemo(() => ({ user, session, loading, signUp, signIn, signOut, updateUser  }), [user, session, loading, signUp, signIn, signOut, updateUser ]);
+  const value = useMemo(() => ({
+    user,
+    session,
+    loading,
+    signUp: mockSignUp,
+    signIn: mockSignIn,
+    signOut: mockSignOut,
+    updateUser
+  }), [user, session, loading, updateUser]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
