@@ -12,7 +12,7 @@ import Configuracoes from './componets/pages/Configuracoes';
 import { Toaster } from './componets/ui/toaster';
 import { NotificationProvider } from './componets/contexts/NotificationContext';
 import { ThemeProvider } from './componets/contexts/ThemeContext';
-import { AIErrorBoundary } from './lib/errorHandler.js';
+import { AIErrorBoundary } from './lib/errorHandler.jsx';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
