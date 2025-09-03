@@ -1,4 +1,6 @@
 // AI-powered error handler for automatic error correction
+import React from 'react';
+
 export class AIErrorHandler {
   constructor() {
     this.errorPatterns = {

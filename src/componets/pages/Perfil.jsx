@@ -34,7 +34,7 @@ function Perfil() {
 
   return (
     <>
-      <Helmet><title>Perfil</title></Helmet>
+      <Helmet><title>Perfil - INDICAPRO</title></Helmet>
       <div className="p-6 space-y-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-3xl font-bold">Meu Perfil</h1>
