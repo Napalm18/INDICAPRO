@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/componets/contexts/AuthContext';
-import { useTheme } from '@/componets/contexts/ThemeContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
-import { Button } from '@/componets/ui/button';
-import { Input } from '@/componets/ui/input';
-import { Label } from '@/componets/ui/label';
-import { Switch } from '@/componets/ui/switch';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
 import { User, Moon, Sun, CreditCard, Save, Palette, Type } from 'lucide-react';
-import { toast } from '@/componets/ui/use-toast';
+import { toast } from '../ui/use-toast';
 
 function Perfil() {
   const { user, updateUser } = useAuth();

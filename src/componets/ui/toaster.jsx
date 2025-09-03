@@ -5,8 +5,8 @@ import {
 	ToastProvider,
 	ToastTitle,
 	ToastViewport,
-} from '@/componets/ui/toast';
-import { useToast } from '@/componets/ui/use-toast';
+} from './toast';
+import { useToast } from './use-toast';
 import React from 'react';
 
 export function Toaster() {

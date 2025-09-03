@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/componets/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
-import { Button } from '@/componets/ui/button';
-import { toast } from '@/componets/ui/use-toast';
+import { useAuth } from '../contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { toast } from '../ui/use-toast';
 import { Check } from 'lucide-react';
 
 function Pagamentos() {

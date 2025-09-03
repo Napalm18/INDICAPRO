@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/componets/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
-import { Button } from '@/componets/ui/button';
-import { Input } from '@/componets/ui/input';
-import { Label } from '@/componets/ui/label';
-import { Badge } from '@/componets/ui/badge';
-import { Checkbox } from '@/componets/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/componets/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/componets/ui/tabs';
+import { useAuth } from '../contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Badge } from '../ui/badge';
+import { Checkbox } from '../ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import {
   Plus, Search, Download, Trash2, CheckCircle, XCircle, Clock, Phone, User as UserIcon, RefreshCw, AlertTriangle
 } from 'lucide-react';
-import { toast } from '@/componets/ui/use-toast';
-import { useNotification } from '@/componets/contexts/NotificationContext';
+import { toast } from '../ui/use-toast';
+import { useNotification } from '../contexts/NotificationContext';
 
 function Indicacoes() {
   const { user } = useAuth();

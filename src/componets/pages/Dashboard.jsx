@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet';
-import { useAuth } from '@/componets/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/componets/ui/card';
-import { Button } from '@/componets/ui/button';
-import { Input } from '@/componets/ui/input';
-import { Progress } from '@/componets/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componets/ui/select';
-import { cn } from '@/componets/lib/utils';
+import { useAuth } from '../contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Progress } from '../ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { cn } from '../lib/utils';
 import {
   DollarSign,
   Users,
@@ -21,8 +21,8 @@ import {
   Calendar,
   Trash2
 } from 'lucide-react';
-import { toast } from '@/componets/ui/use-toast';
-import { useNotification } from '@/componets/contexts/NotificationContext';
+import { toast } from '../ui/use-toast';
+import { useNotification } from '../contexts/NotificationContext';
 
 function Dashboard() {
   const { user } = useAuth();
