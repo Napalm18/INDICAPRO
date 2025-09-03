@@ -32,13 +32,13 @@ function Dashboard() {
   const [comissoes, setComissoes] = useState({ evento: 100, cartorio: 150 });
   const [usersList, setUsersList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 3000); 
+    const interval = setInterval(loadData, 3000);
     return () => clearInterval(interval);
   }, []);
-  
+
   const loadData = () => {
     const savedIndicacoes = JSON.parse(localStorage.getItem('indicacoes') || '[]');
     const savedMetas = JSON.parse(localStorage.getItem('metas') || '{"mensal": 10, "anual": 120, "bonusMensal": 500, "bonusAnual": 2000}');
@@ -64,7 +64,7 @@ function Dashboard() {
         ind.vendedorNome.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     return filtered;
   };
 
@@ -75,7 +75,7 @@ function Dashboard() {
   const currentYear = new Date().getFullYear();
 
   const vendedorIndicacoesAprovadas = indicacoes.filter(i => i.vendedorId === user.id && i.status === 'aprovada');
-  
+
   const indicacoesMesAtualVendedor = vendedorIndicacoesAprovadas.filter(ind => {
     const indDate = new Date(ind.createdAt);
     return indDate.getMonth() === currentMonth && indDate.getFullYear() === currentYear;
@@ -124,10 +124,10 @@ function Dashboard() {
   const deleteIndicacao = (id, motivo) => {
     const indicacaoToDelete = indicacoes.find(ind => ind.id === id);
     const updatedIndicacoes = indicacoes.filter(ind => ind.id !== id);
-    
+
     setIndicacoes(updatedIndicacoes);
     localStorage.setItem('indicacoes', JSON.stringify(updatedIndicacoes));
-    
+
     const lixeira = JSON.parse(localStorage.getItem('lixeira') || '[]');
     const deletedItem = { ...indicacaoToDelete, deletedAt: new Date().toISOString(), motivo };
     lixeira.push(deletedItem);
@@ -137,7 +137,7 @@ function Dashboard() {
       title: "Indicação excluída",
       description: "A indicação foi movida para a lixeira.",
     });
-    
+
     const gestores = JSON.parse(localStorage.getItem('users') || '[]').filter(u => u.role === 'gestor');
     gestores.forEach(gestor => {
       addNotification(gestor.id, `O vendedor ${user.name} excluiu uma indicação. Motivo: ${motivo}`);
@@ -152,7 +152,7 @@ function Dashboard() {
       toast({ title: "Exclusão cancelada", description: "O motivo é obrigatório.", variant: "destructive" });
     }
   };
-  
+
 
   const renderVendedorDashboard = () => (
     <div className="space-y-6">
@@ -196,7 +196,7 @@ function Dashboard() {
           </CardContent>
         </Card>
       </motion.div>
-      
+
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
         <Card>
           <CardHeader><CardTitle>Minhas Últimas Indicações</CardTitle></CardHeader>
@@ -217,7 +217,7 @@ function Dashboard() {
       </motion.div>
     </div>
   );
-  
+
   const renderGestorDashboard = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -227,14 +227,14 @@ function Dashboard() {
           <Card><CardHeader><CardTitle className="text-yellow-500">Pendentes</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoes.filter(i => i.status === 'pendente').length}</p></CardContent></Card>
           <Card><CardHeader><CardTitle className="text-red-500">Reprovadas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoes.filter(i => i.status === 'reprovada').length}</p></CardContent></Card>
       </div>
-      
+
       <div className="flex gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input placeholder="Buscar por nome do indicado ou vendedor..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10"/>
         </div>
       </div>
-      
+
       <Card>
         <CardHeader><CardTitle>Lista de Indicações</CardTitle></CardHeader>
         <CardContent>
@@ -263,14 +263,14 @@ function Dashboard() {
   return (
     <>
       <Helmet>
-        <title>Dashboard - Sistema de Indicações</title>
+        <title>Dashboard - INDICAPRO</title>
       </Helmet>
       <div className="min-h-screen bg-dark-luxury p-6 space-y-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="animate-float">
           <h1 className="futuristic-gradient-text text-4xl font-bold mb-2">DASHBOARD</h1>
           <p className="text-golden/80 text-lg">Bem-vindo ao futuro, {user.name}!</p>
         </motion.div>
-        
+
         {user.role === 'vendedor' ? renderVendedorDashboard() : renderGestorDashboard()}
       </div>
     </>

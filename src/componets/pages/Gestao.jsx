@@ -11,8 +11,8 @@ function Gestao() {
   return (
     <>
       <Helmet>
-        <title>Gestão - Sistema de Indicações</title>
-        <meta name="description" content="Painel de gestão para administradores do sistema de indicações" />
+        <title>Gestão - INDICAPRO</title>
+        <meta name="description" content="Painel de gestão para administradores do sistema INDICAPRO" />
       </Helmet>
 
       <div className="p-6 space-y-6">

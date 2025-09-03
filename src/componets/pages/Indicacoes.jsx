@@ -87,7 +87,7 @@ function Indicacoes() {
 
   const deleteIndicacao = (id) => {
     const motivo = "Exclusão pelo gestor";
-    
+
     const indicacaoToDelete = indicacoes.find(ind => ind.id === id);
     const updatedIndicacoes = indicacoes.filter(ind => ind.id !== id);
     setIndicacoes(updatedIndicacoes);
@@ -100,9 +100,9 @@ function Indicacoes() {
     localStorage.setItem('lixeira', JSON.stringify(updatedLixeira));
     toast({ title: "Indicação movida para a lixeira" });
   };
-  
+
   const handleLixeiraSelection = (id) => {
-    setSelectedLixeira(prev => 
+    setSelectedLixeira(prev =>
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
   };
@@ -118,14 +118,14 @@ function Indicacoes() {
   const restoreSelected = () => {
     const itemsToRestore = lixeira.filter(item => selectedLixeira.includes(item.id));
     const remainingLixeira = lixeira.filter(item => !selectedLixeira.includes(item.id));
-    
+
     setLixeira(remainingLixeira);
     localStorage.setItem('lixeira', JSON.stringify(remainingLixeira));
-    
+
     const updatedIndicacoes = [...indicacoes, ...itemsToRestore];
     setIndicacoes(updatedIndicacoes);
     localStorage.setItem('indicacoes', JSON.stringify(updatedIndicacoes));
-    
+
     setSelectedLixeira([]);
     toast({ title: `${itemsToRestore.length} indicações restauradas!` });
   };
@@ -137,7 +137,7 @@ function Indicacoes() {
     setSelectedLixeira([]);
     toast({ title: `${selectedLixeira.length} indicações excluídas permanentemente!` });
   };
-  
+
   const emptyLixeira = () => {
     setLixeira([]);
     localStorage.setItem('lixeira', '[]');
@@ -154,7 +154,7 @@ function Indicacoes() {
     const Icon = config.icon;
     return <Badge variant={config.variant} className="flex items-center gap-1"><Icon className={`h-3 w-3 ${config.color}`} />{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>;
   };
-  
+
   const renderIndicacoesList = () => (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4">
       {filteredIndicacoes.length === 0 ? (
@@ -200,7 +200,7 @@ function Indicacoes() {
       ) : (
         <>
           <div className="flex items-center p-2 border-b">
-            <Checkbox 
+            <Checkbox
               id="select-all"
               onCheckedChange={handleSelectAllLixeira}
               checked={selectedLixeira.length === lixeira.length && lixeira.length > 0}
@@ -213,7 +213,7 @@ function Indicacoes() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <Checkbox 
+                      <Checkbox
                         checked={selectedLixeira.includes(item.id)}
                         onCheckedChange={() => handleLixeiraSelection(item.id)}
                       />
@@ -235,7 +235,7 @@ function Indicacoes() {
 
   return (
     <>
-      <Helmet><title>Indicações</title></Helmet>
+      <Helmet><title>Indicações - INDICAPRO</title></Helmet>
       <div className="p-6 space-y-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Indicações</h1>
@@ -255,7 +255,7 @@ function Indicacoes() {
             </Dialog>
           </div>
         </motion.div>
-        
+
         <Tabs defaultValue="indicacoes">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="indicacoes">Minhas Indicações</TabsTrigger>
