@@ -47,12 +47,12 @@ function App() {
   return (
     <AIErrorBoundary>
       <ThemeProvider>
-        <NotificationProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <NotificationProvider>
             <AppRoutes />
             <Toaster />
-          </AuthProvider>
-        </NotificationProvider>
+          </NotificationProvider>
+        </AuthProvider>
       </ThemeProvider>
     </AIErrorBoundary>
   );

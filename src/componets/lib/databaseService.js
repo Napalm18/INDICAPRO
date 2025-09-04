@@ -1,12 +1,12 @@
-import sql from './neonClient.js';
+import sql, { statements } from './sqliteClient.js';
 
-// Database service functions using Neon
+// Database service functions using SQLite
 export const databaseService = {
   // Users operations
   async getUserById(id) {
     try {
-      const result = await sql`SELECT * FROM users WHERE id = ${id}`;
-      return result[0] || null;
+      const result = statements.getUserById.get(id);
+      return result || null;
     } catch (error) {
       console.error('Error fetching user:', error);
       throw error;
@@ -16,12 +16,8 @@ export const databaseService = {
   async createUser(userData) {
     try {
       const { id, name, email, role = 'vendedor' } = userData;
-      const result = await sql`
-        INSERT INTO users (id, name, email, role)
-        VALUES (${id}, ${name}, ${email}, ${role})
-        RETURNING *
-      `;
-      return result[0];
+      statements.createUser.run(id, name, email, role);
+      return await this.getUserById(id);
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
@@ -30,15 +26,20 @@ export const databaseService = {
 
   async updateUser(id, userData) {
     try {
-      const result = await sql`
-        UPDATE users
-        SET ${sql(userData)}
-        WHERE id = ${id}
-        RETURNING *
-      `;
-      return result[0];
+      const { name, email, role } = userData;
+      statements.updateUser.run(name, email, role, id);
+      return await this.getUserById(id);
     } catch (error) {
       console.error('Error updating user:', error);
+      throw error;
+    }
+  },
+
+  async getAllUsers() {
+    try {
+      return statements.getAllUsers.all();
+    } catch (error) {
+      console.error('Error fetching all users:', error);
       throw error;
     }
   },
@@ -46,12 +47,7 @@ export const databaseService = {
   // Indicacoes operations
   async getIndicacoesByUserId(userId) {
     try {
-      const result = await sql`
-        SELECT * FROM indicacoes
-        WHERE vendedor_id = ${userId}
-        ORDER BY created_at DESC
-      `;
-      return result;
+      return statements.getIndicacoesByUserId.all(userId);
     } catch (error) {
       console.error('Error fetching indicacoes:', error);
       throw error;
@@ -60,11 +56,9 @@ export const databaseService = {
 
   async createIndicacao(indicacaoData) {
     try {
-      const result = await sql`
-        INSERT INTO indicacoes ${sql(indicacaoData)}
-        RETURNING *
-      `;
-      return result[0];
+      const { id, vendedor_id, cliente_nome, cliente_email, cliente_telefone, status = 'pendente', valor = 0 } = indicacaoData;
+      statements.createIndicacao.run(id, vendedor_id, cliente_nome, cliente_email, cliente_telefone, status, valor);
+      return indicacaoData;
     } catch (error) {
       console.error('Error creating indicacao:', error);
       throw error;
@@ -73,13 +67,20 @@ export const databaseService = {
 
   async getAllIndicacoes() {
     try {
-      const result = await sql`
-        SELECT * FROM indicacoes
-        ORDER BY created_at DESC
-      `;
-      return result;
+      return statements.getAllIndicacoes.all();
     } catch (error) {
       console.error('Error fetching all indicacoes:', error);
+      throw error;
+    }
+  },
+
+  async updateIndicacao(id, indicacaoData) {
+    try {
+      const { status, valor } = indicacaoData;
+      statements.updateIndicacao.run(status, valor, id);
+      return indicacaoData;
+    } catch (error) {
+      console.error('Error updating indicacao:', error);
       throw error;
     }
   },
@@ -87,8 +88,7 @@ export const databaseService = {
   // Metas operations
   async getMetas() {
     try {
-      const result = await sql`SELECT * FROM metas LIMIT 1`;
-      return result[0] || null;
+      return statements.getMetas.get() || null;
     } catch (error) {
       console.error('Error fetching metas:', error);
       throw error;
@@ -97,13 +97,9 @@ export const databaseService = {
 
   async updateMetas(metasData) {
     try {
-      const result = await sql`
-        UPDATE metas
-        SET ${sql(metasData)}
-        WHERE id = (SELECT id FROM metas LIMIT 1)
-        RETURNING *
-      `;
-      return result[0];
+      const { meta_mensal, meta_anual } = metasData;
+      statements.updateMetas.run(meta_mensal, meta_anual);
+      return await this.getMetas();
     } catch (error) {
       console.error('Error updating metas:', error);
       throw error;
@@ -113,8 +109,7 @@ export const databaseService = {
   // Comissoes operations
   async getComissoes() {
     try {
-      const result = await sql`SELECT * FROM comissoes LIMIT 1`;
-      return result[0] || null;
+      return statements.getComissoes.get() || null;
     } catch (error) {
       console.error('Error fetching comissoes:', error);
       throw error;
@@ -123,13 +118,9 @@ export const databaseService = {
 
   async updateComissoes(comissoesData) {
     try {
-      const result = await sql`
-        UPDATE comissoes
-        SET ${sql(comissoesData)}
-        WHERE id = (SELECT id FROM comissoes LIMIT 1)
-        RETURNING *
-      `;
-      return result[0];
+      const { percentual } = comissoesData;
+      statements.updateComissoes.run(percentual);
+      return await this.getComissoes();
     } catch (error) {
       console.error('Error updating comissoes:', error);
       throw error;
@@ -139,12 +130,7 @@ export const databaseService = {
   // Notifications operations
   async getNotificationsByUserId(userId) {
     try {
-      const result = await sql`
-        SELECT * FROM notifications
-        WHERE user_id = ${userId}
-        ORDER BY created_at DESC
-      `;
-      return result;
+      return statements.getNotificationsByUserId.all(userId);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       throw error;
@@ -153,11 +139,9 @@ export const databaseService = {
 
   async createNotification(notificationData) {
     try {
-      const result = await sql`
-        INSERT INTO notifications ${sql(notificationData)}
-        RETURNING *
-      `;
-      return result[0];
+      const { id, user_id, message, type = 'info' } = notificationData;
+      statements.createNotification.run(id, user_id, message, type);
+      return notificationData;
     } catch (error) {
       console.error('Error creating notification:', error);
       throw error;
@@ -166,9 +150,18 @@ export const databaseService = {
 
   async deleteNotificationsByUserId(userId) {
     try {
-      await sql`DELETE FROM notifications WHERE user_id = ${userId}`;
+      statements.deleteNotificationsByUserId.run(userId);
     } catch (error) {
       console.error('Error deleting notifications:', error);
+      throw error;
+    }
+  },
+
+  async markNotificationRead(id) {
+    try {
+      statements.markNotificationRead.run(id);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
       throw error;
     }
   }

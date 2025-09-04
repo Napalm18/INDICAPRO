@@ -1,17 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import databaseService from '../lib/databaseService';
 import { useAuth } from './AuthContext';
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState({});
-  const { user } = useAuth();
+  const authContext = useAuth();
+  const user = authContext ? authContext.user : null;
 
   const loadNotifications = useCallback(async () => {
     if (user) {
       try {
-        const data = await databaseService.getNotificationsByUserId(user.id);
+        const response = await fetch(`/api/notifications/${user.id}`);
+        if (!response.ok) throw new Error('Failed to fetch notifications');
+        const data = await response.json();
         setNotifications(prev => ({ ...prev, [user.id]: data }));
       } catch (error) {
         console.error('Error loading notifications:', error);
@@ -25,12 +27,18 @@ export const NotificationProvider = ({ children }) => {
 
   const addNotification = useCallback(async (userId, message) => {
     try {
-      const data = await databaseService.createNotification({
-        user_id: userId,
-        message,
-        read: false,
-        created_at: new Date().toISOString()
+      const response = await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          message,
+          read: false,
+          created_at: new Date().toISOString()
+        }),
       });
+      if (!response.ok) throw new Error('Failed to add notification');
+      const data = await response.json();
       setNotifications(prev => {
         const userNotifs = prev[userId] || [];
         return { ...prev, [userId]: [data, ...userNotifs] };
@@ -42,7 +50,10 @@ export const NotificationProvider = ({ children }) => {
 
   const clearNotifications = useCallback(async (userId) => {
     try {
-      await databaseService.deleteNotificationsByUserId(userId);
+      const response = await fetch(`/api/notifications/${userId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to clear notifications');
       setNotifications(prev => ({ ...prev, [userId]: [] }));
     } catch (error) {
       console.error('Error clearing notifications:', error);
