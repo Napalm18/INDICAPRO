@@ -1,280 +1,204 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet';
-import { useAuth } from '../contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Progress } from '../ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { cn } from '../lib/utils';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import {
-  DollarSign,
+  TrendingUp,
   Users,
+  DollarSign,
+  Target,
+  Bell,
+  Plus,
+  Eye,
   CheckCircle,
   Clock,
-  XCircle,
-  Calculator,
-  Gift,
-  Search,
-  Building,
-  Calendar,
-  Trash2
-} from 'lucide-react';
-import { toast } from '../ui/use-toast';
-import { useNotification } from '../contexts/NotificationContext';
+  AlertTriangle
+} from "lucide-react";
 
-function Dashboard() {
-  const { user } = useAuth();
-  const { addNotification } = useNotification();
-  const [indicacoes, setIndicacoes] = useState([]);
-  const [metas, setMetas] = useState({ mensal: 10, anual: 120, bonusMensal: 500, bonusAnual: 2000 });
-  const [comissoes, setComissoes] = useState({ evento: 100, cartorio: 150 });
-  const [usersList, setUsersList] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+export default function Dashboard() {
+  const [stats, setStats] = useState({
+    totalIndicacoes: 0,
+    indicacoesAprovadas: 0,
+    valorTotal: 0,
+    metaMensal: 5000,
+    notificacoes: []
+  });
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 3000);
-    return () => clearInterval(interval);
+    // Mock data for demonstration
+    setStats({
+      totalIndicacoes: 24,
+      indicacoesAprovadas: 18,
+      valorTotal: 3240.50,
+      metaMensal: 5000,
+      notificacoes: [
+        { id: 1, tipo: "aprovacao", mensagem: "Indicação de João Silva foi aprovada", data: "2024-01-15" },
+        { id: 2, tipo: "pagamento", mensagem: "Pagamento de R$ 150,00 processado", data: "2024-01-14" },
+        { id: 3, tipo: "meta", mensagem: "Meta mensal atingida em 85%", data: "2024-01-13" }
+      ]
+    });
   }, []);
 
-  const loadData = () => {
-    const savedIndicacoes = JSON.parse(localStorage.getItem('indicacoes') || '[]');
-    const savedMetas = JSON.parse(localStorage.getItem('metas') || '{"mensal": 10, "anual": 120, "bonusMensal": 500, "bonusAnual": 2000}');
-    const savedComissoes = JSON.parse(localStorage.getItem('comissoes') || '{"evento": 100, "cartorio": 150}');
-    const savedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+  const progressoMeta = (stats.valorTotal / stats.metaMensal) * 100;
 
-    setIndicacoes(savedIndicacoes);
-    setMetas(savedMetas);
-    setComissoes(savedComissoes);
-    setUsersList(savedUsers.filter(u => u.role === 'vendedor'));
-  };
-
-  const getFilteredIndicacoes = () => {
-    let filtered = indicacoes;
-
-    if (user.role === 'vendedor') {
-      return filtered.filter(ind => ind.vendedorId === user.id);
-    }
-
-    if (searchTerm) {
-      filtered = filtered.filter(ind =>
-        ind.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ind.vendedorNome.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    return filtered;
-  };
-
-  const indicacoesUsuario = getFilteredIndicacoes();
-  const indicacoesMesAtual = indicacoes.filter(ind => new Date(ind.createdAt).getMonth() === new Date().getMonth());
-
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  const vendedorIndicacoesAprovadas = indicacoes.filter(i => i.vendedorId === user.id && i.status === 'aprovada');
-
-  const indicacoesMesAtualVendedor = vendedorIndicacoesAprovadas.filter(ind => {
-    const indDate = new Date(ind.createdAt);
-    return indDate.getMonth() === currentMonth && indDate.getFullYear() === currentYear;
-  });
-
-  const indicacoesAnoAtualVendedor = vendedorIndicacoesAprovadas.filter(ind => {
-    const indDate = new Date(ind.createdAt);
-    return indDate.getFullYear() === currentYear;
-  });
-
-  const progressoMensal = metas.mensal > 0 ? Math.min((indicacoesMesAtualVendedor.length / metas.mensal) * 100, 100) : 0;
-  const progressoAnual = metas.anual > 0 ? Math.min((indicacoesAnoAtualVendedor.length / metas.anual) * 100, 100) : 0;
-
-  const calcularComissao = (tipo) => {
-    const valor = tipo === 'evento' ? comissoes.evento : comissoes.cartorio;
-    toast({
-      title: `Calculadora de Comissão (${tipo})`,
-      description: `Valor por indicação: R$ ${valor.toFixed(2)}`,
-    });
-  };
-
-  const updateIndicacaoStatus = (id, newStatus) => {
-    const updatedIndicacoes = indicacoes.map(ind =>
-      ind.id === id ? { ...ind, status: ind.status === newStatus ? 'pendente' : newStatus } : ind
-    );
-    setIndicacoes(updatedIndicacoes);
-    localStorage.setItem('indicacoes', JSON.stringify(updatedIndicacoes));
-    const targetIndicacao = updatedIndicacoes.find(i => i.id === id);
-    if(newStatus === 'aprovada') {
-      addNotification(targetIndicacao.vendedorId, `Sua indicação para ${targetIndicacao.nome} foi APROVADA!`);
-    }
-    if(newStatus === 'reprovada') {
-      addNotification(targetIndicacao.vendedorId, `Sua indicação para ${targetIndicacao.nome} foi REPROVADA.`);
-    }
-  };
-
-  const updateIndicacaoTipo = (id, newTipo) => {
-    const updatedIndicacoes = indicacoes.map(ind =>
-      ind.id === id ? { ...ind, tipo: ind.tipo === newTipo ? null : newTipo } : ind
-    );
-    setIndicacoes(updatedIndicacoes);
-    localStorage.setItem('indicacoes', JSON.stringify(updatedIndicacoes));
-  };
-
-
-  const deleteIndicacao = (id, motivo) => {
-    const indicacaoToDelete = indicacoes.find(ind => ind.id === id);
-    const updatedIndicacoes = indicacoes.filter(ind => ind.id !== id);
-
-    setIndicacoes(updatedIndicacoes);
-    localStorage.setItem('indicacoes', JSON.stringify(updatedIndicacoes));
-
-    const lixeira = JSON.parse(localStorage.getItem('lixeira') || '[]');
-    const deletedItem = { ...indicacaoToDelete, deletedAt: new Date().toISOString(), motivo };
-    lixeira.push(deletedItem);
-    localStorage.setItem('lixeira', JSON.stringify(lixeira));
-
-    toast({
-      title: "Indicação excluída",
-      description: "A indicação foi movida para a lixeira.",
-    });
-
-    const gestores = JSON.parse(localStorage.getItem('users') || '[]').filter(u => u.role === 'gestor');
-    gestores.forEach(gestor => {
-      addNotification(gestor.id, `O vendedor ${user.name} excluiu uma indicação. Motivo: ${motivo}`);
-    });
-  };
-
-  const showDeleteDialog = (id) => {
-    const motivo = prompt("Por favor, informe o motivo da exclusão:");
-    if (motivo) {
-      deleteIndicacao(id, motivo);
-    } else {
-      toast({ title: "Exclusão cancelada", description: "O motivo é obrigatório.", variant: "destructive" });
-    }
-  };
-
-
-  const renderVendedorDashboard = () => (
+  return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-          <Card className={`glass-effect ${progressoMensal >= 100 ? 'border-primary shadow-lg' : ''}`}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Gift className="h-5 w-5 text-primary"/>Bônus Mensal</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">R$ {metas.bonusMensal.toFixed(2)}</p>
-              <p className="text-muted-foreground">Meta: {metas.mensal} indicações</p>
-              <Progress value={progressoMensal} className="mt-2 progress-bar" />
-              <p className="text-right text-sm mt-1">{indicacoesMesAtualVendedor.length}/{metas.mensal}</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-          <Card className={`glass-effect ${progressoAnual >= 100 ? 'border-primary shadow-lg' : ''}`}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Gift className="h-5 w-5 text-primary"/>Bônus Anual</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">R$ {metas.bonusAnual.toFixed(2)}</p>
-              <p className="text-muted-foreground">Meta: {metas.anual} indicações</p>
-              <Progress value={progressoAnual} className="mt-2 progress-bar" />
-              <p className="text-right text-sm mt-1">{indicacoesAnoAtualVendedor.length}/{metas.anual}</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-yellow-400 mb-2">Dashboard</h1>
+          <p className="text-yellow-300">Bem-vindo ao seu painel de controle</p>
+        </div>
+        <Button className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold px-6 py-3 rounded-lg shadow-lg shadow-yellow-500/20">
+          <Plus className="w-5 h-5 mr-2" />
+          Nova Indicação
+        </Button>
       </div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <Card className="glass-effect">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Calculator className="h-5 w-5"/>Calculadora de Comissão</CardTitle>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-yellow-300">Total de Indicações</CardTitle>
+            <Users className="h-4 w-4 text-yellow-400" />
           </CardHeader>
-          <CardContent className="flex gap-4">
-            <Button onClick={() => calcularComissao('evento')} className="flex-1 gradient-bg text-primary-foreground">Evento (R$ {comissoes.evento})</Button>
-            <Button onClick={() => calcularComissao('cartorio')} className="flex-1 gradient-bg text-primary-foreground">Cartório (R$ {comissoes.cartorio})</Button>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-400">{stats.totalIndicacoes}</div>
+            <p className="text-xs text-yellow-300">
+              +12% em relação ao mês passado
+            </p>
           </CardContent>
         </Card>
-      </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <Card>
-          <CardHeader><CardTitle>Minhas Últimas Indicações</CardTitle></CardHeader>
+        <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-yellow-300">Indicações Aprovadas</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-400" />
+          </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {getFilteredIndicacoes().slice(0, 5).map(ind => (
-                <div key={ind.id} className="flex items-center justify-between p-2 border rounded-lg">
-                  <div>
-                    <p className="font-semibold">{ind.nome}</p>
-                    <p className="text-sm text-muted-foreground">{new Date(ind.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <Button size="sm" variant="destructive" onClick={() => showDeleteDialog(ind.id)}><Trash2 className="h-4 w-4" /></Button>
-                </div>
-              ))}
+            <div className="text-2xl font-bold text-yellow-400">{stats.indicacoesAprovadas}</div>
+            <p className="text-xs text-yellow-300">
+              {Math.round((stats.indicacoesAprovadas / stats.totalIndicacoes) * 100)}% de aprovação
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-yellow-300">Valor Total</CardTitle>
+            <DollarSign className="h-4 w-4 text-yellow-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-400">
+              R$ {stats.valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </div>
+            <p className="text-xs text-yellow-300">
+              +8% em relação ao mês passado
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-yellow-300">Meta Mensal</CardTitle>
+            <Target className="h-4 w-4 text-yellow-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-400">
+              {Math.round(progressoMeta)}%
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+              <div
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(progressoMeta, 100)}%` }}
+              ></div>
             </div>
           </CardContent>
         </Card>
-      </motion.div>
-    </div>
-  );
-
-  const renderGestorDashboard = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          <Card><CardHeader><CardTitle>Total</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoes.length}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle>Mês</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoesMesAtual.length}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle className="text-green-500">Aprovadas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoes.filter(i => i.status === 'aprovada').length}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle className="text-yellow-500">Pendentes</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoes.filter(i => i.status === 'pendente').length}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle className="text-red-500">Reprovadas</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">{indicacoes.filter(i => i.status === 'reprovada').length}</p></CardContent></Card>
       </div>
 
-      <div className="flex gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input placeholder="Buscar por nome do indicado ou vendedor..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10"/>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity */}
+        <div className="lg:col-span-2">
+          <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10">
+            <CardHeader>
+              <CardTitle className="text-yellow-400 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Atividades Recentes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {stats.notificacoes.map((notificacao) => (
+                <div key={notificacao.id} className="flex items-start gap-3 p-3 rounded-lg bg-yellow-900/10 border border-yellow-600/30">
+                  <div className="w-8 h-8 bg-gradient-to-tr from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    {notificacao.tipo === 'aprovacao' && <CheckCircle className="w-4 h-4 text-black" />}
+                    {notificacao.tipo === 'pagamento' && <DollarSign className="w-4 h-4 text-black" />}
+                    {notificacao.tipo === 'meta' && <Target className="w-4 h-4 text-black" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-yellow-300 text-sm">{notificacao.mensagem}</p>
+                    <p className="text-yellow-400/60 text-xs mt-1">{notificacao.data}</p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div>
+          <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10">
+            <CardHeader>
+              <CardTitle className="text-yellow-400">Ações Rápidas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold py-3 rounded-lg shadow-lg shadow-yellow-500/20 transition-all duration-200">
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Indicação
+              </Button>
+
+              <Button variant="outline" className="w-full border-yellow-600 text-yellow-300 hover:bg-yellow-700/20 py-3 rounded-lg transition-all duration-200">
+                <Eye className="w-4 h-4 mr-2" />
+                Ver Todas as Indicações
+              </Button>
+
+              <Button variant="outline" className="w-full border-yellow-600 text-yellow-300 hover:bg-yellow-700/20 py-3 rounded-lg transition-all duration-200">
+                <DollarSign className="w-4 h-4 mr-2" />
+                Ver Pagamentos
+              </Button>
+
+              <Button variant="outline" className="w-full border-yellow-600 text-yellow-300 hover:bg-yellow-700/20 py-3 rounded-lg transition-all duration-200">
+                <Target className="w-4 h-4 mr-2" />
+                Ver Metas
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Status Indicators */}
+          <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-lg shadow-yellow-500/10 mt-6">
+            <CardHeader>
+              <CardTitle className="text-yellow-400">Status do Sistema</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-yellow-300 text-sm">Conexão Supabase</span>
+                <Badge className="bg-green-600 text-white">Online</Badge>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-yellow-300 text-sm">Última Sincronização</span>
+                <Badge className="bg-yellow-600 text-black">2 min atrás</Badge>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-yellow-300 text-sm">Notificações</span>
+                <Badge className="bg-blue-600 text-white">{stats.notificacoes.length} novas</Badge>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      <Card>
-        <CardHeader><CardTitle>Lista de Indicações</CardTitle></CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {getFilteredIndicacoes().slice(0, 10).map(ind => (
-              <div key={ind.id} className="flex items-center justify-between p-2 border rounded-lg">
-                <div>
-                  <p className="font-semibold">{ind.nome}</p>
-                  <p className="text-sm text-muted-foreground">{ind.vendedorNome} - {new Date(ind.createdAt).toLocaleDateString()}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="icon" onClick={() => updateIndicacaoStatus(ind.id, 'aprovada')} className={cn(ind.status === 'aprovada' ? 'bg-green-600' : 'bg-secondary')}><CheckCircle className="h-4 w-4" /></Button>
-                  <Button size="icon" variant={ind.status === 'reprovada' ? 'destructive': 'secondary'} onClick={() => updateIndicacaoStatus(ind.id, 'reprovada')}><XCircle className="h-4 w-4" /></Button>
-                  <Button size="sm" variant={ind.tipo === 'cartorio' ? 'default': 'outline'} onClick={() => updateIndicacaoTipo(ind.id, 'cartorio')}>Cartório</Button>
-                  <Button size="sm" variant={ind.tipo === 'evento' ? 'default': 'outline'} onClick={() => updateIndicacaoTipo(ind.id, 'evento')}>Evento</Button>
-                  <Button size="icon" variant="destructive" onClick={() => deleteIndicacao(ind.id, "Exclusão pelo gestor")}><Trash2 className="h-4 w-4" /></Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
-
-  return (
-    <>
-      <Helmet>
-        <title>Dashboard - INDICAPRO</title>
-      </Helmet>
-      <div className="min-h-screen bg-dark-luxury p-6 space-y-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="animate-float">
-          <h1 className="futuristic-gradient-text text-4xl font-bold mb-2">DASHBOARD</h1>
-          <p className="text-golden/80 text-lg">Bem-vindo ao futuro, {user.name}!</p>
-        </motion.div>
-
-        {user.role === 'vendedor' ? renderVendedorDashboard() : renderGestorDashboard()}
-      </div>
-    </>
-  );
 }
-
-export default Dashboard;
