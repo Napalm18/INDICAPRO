@@ -1,113 +1,278 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
-import { toast } from '../ui/use-toast';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Target, Mail, Lock, Eye, EyeOff, UserPlus, LogIn } from "lucide-react";
 
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { user, signIn, signUp } = useAuth();
+export default function Login() {
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: ""
+  });
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) navigate('/dashboard');
-  }, [user, navigate]);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.email) {
+      newErrors.email = "Email é obrigatório";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email inválido";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Senha é obrigatória";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Senha deve ter pelo menos 6 caracteres";
+    }
+
+    if (!isLogin) {
+      if (!formData.fullName) {
+        newErrors.fullName = "Nome completo é obrigatório";
+      }
+
+      if (!formData.confirmPassword) {
+        newErrors.confirmPassword = "Confirmação de senha é obrigatória";
+      } else if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Senhas não coincidem";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    if (isSignUp) {
-      const { error } = await signUp(email, password, name);
-      if (!error) {
-        toast({ title: 'Cadastro realizado!', description: 'Faça login para continuar.' });
-        setIsSignUp(false);
-      }
-    } else {
-      const { error } = await signIn(email, password);
-      if (!error) navigate('/dashboard');
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Mock successful login/signup
+      console.log(isLogin ? "Login" : "Cadastro", "bem-sucedido:", formData);
+
+      // Navigate to dashboard
+      navigate("/dashboard");
+
+    } catch (error) {
+      console.error("Erro:", error);
+      setErrors({ general: "Erro ao processar solicitação. Tente novamente." });
+    } finally {
+      setIsLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-luxury p-4 animate-float">
-      <Card variant="futuristic" className="max-w-md w-full futuristic-glow">
-        <CardHeader className="text-center">
-          <CardTitle className="futuristic-gradient-text text-3xl font-bold mb-2">
-            {isSignUp ? 'CADASTRO' : 'LOGIN'}
-          </CardTitle>
-          <CardDescription className="text-golden/80">
-            {isSignUp ? 'Crie sua conta futurista' : 'Entre na sua conta premium'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {isSignUp && (
-              <div>
-                <Label htmlFor="name" className="text-golden font-semibold">Nome</Label>
-                <Input
-                  id="name"
-                  variant="futuristic"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  required
-                  placeholder="Digite seu nome"
-                />
-              </div>
-            )}
-            <div>
-              <Label htmlFor="email" className="text-golden font-semibold">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                variant="futuristic"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                placeholder="Digite seu email"
-              />
-            </div>
-            <div>
-              <Label htmlFor="password" className="text-golden font-semibold">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                variant="futuristic"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                placeholder="Digite sua senha"
-              />
-            </div>
-            <Button
-              type="submit"
-              variant="futuristic"
-              className="w-full h-12 text-lg font-bold futuristic-glow"
-              disabled={loading}
-            >
-              {loading ? (isSignUp ? 'Cadastrando...' : 'Entrando...') : (isSignUp ? 'Cadastrar' : 'Entrar')}
-            </Button>
-          </form>
-          <div className="mt-6 text-center">
-            <button
-              className="text-golden hover:text-golden/80 underline underline-offset-4 transition-colors duration-300"
-              onClick={() => setIsSignUp(!isSignUp)}
-              type="button"
-            >
-              {isSignUp ? 'Já tem conta? Faça login' : 'Não tem conta? Cadastre-se'}
-            </button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 bg-gradient-to-tr from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-yellow-500/20 animate-pulse">
+            <Target className="w-10 h-10 text-black" />
           </div>
-        </CardContent>
-      </Card>
+          <h1 className="text-3xl font-bold text-yellow-400 mb-2 tracking-wider">INDICAPRO</h1>
+          <p className="text-yellow-300">Sistema Premium de Indicações</p>
+        </div>
+
+        {/* Login/Signup Card */}
+        <Card className="bg-gradient-to-br from-black to-gray-900 border-yellow-600 shadow-2xl shadow-yellow-500/10">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-yellow-400 mb-2">
+              {isLogin ? "Entrar" : "Cadastrar"}
+            </CardTitle>
+            <p className="text-yellow-300 text-sm">
+              {isLogin
+                ? "Acesse sua conta para continuar"
+                : "Crie sua conta para começar"
+              }
+            </p>
+          </CardHeader>
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* General Error */}
+              {errors.general && (
+                <div className="bg-red-900/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg text-sm">
+                  {errors.general}
+                </div>
+              )}
+
+              {/* Full Name (only for signup) */}
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-yellow-300">
+                    Nome Completo
+                  </Label>
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    className="bg-gray-800 border-yellow-600 text-yellow-400 placeholder-yellow-400/50 focus:border-yellow-500 focus:ring-yellow-500"
+                    placeholder="Digite seu nome completo"
+                  />
+                  {errors.fullName && (
+                    <p className="text-red-400 text-sm">{errors.fullName}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-yellow-300">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-5 w-5 text-yellow-400" />
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="pl-10 bg-gray-800 border-yellow-600 text-yellow-400 placeholder-yellow-400/50 focus:border-yellow-500 focus:ring-yellow-500"
+                    placeholder="Digite seu email"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-red-400 text-sm">{errors.email}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-yellow-300">
+                  Senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-5 w-5 text-yellow-400" />
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="pl-10 pr-10 bg-gray-800 border-yellow-600 text-yellow-400 placeholder-yellow-400/50 focus:border-yellow-500 focus:ring-yellow-500"
+                    placeholder="Digite sua senha"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 text-yellow-400 hover:text-yellow-300"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-red-400 text-sm">{errors.password}</p>
+                )}
+              </div>
+
+              {/* Confirm Password (only for signup) */}
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-yellow-300">
+                    Confirmar Senha
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-5 w-5 text-yellow-400" />
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      className="pl-10 bg-gray-800 border-yellow-600 text-yellow-400 placeholder-yellow-400/50 focus:border-yellow-500 focus:ring-yellow-500"
+                      placeholder="Confirme sua senha"
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-red-400 text-sm">{errors.confirmPassword}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-semibold py-3 rounded-lg shadow-lg shadow-yellow-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Processando...
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    {isLogin ? <LogIn className="w-5 h-5 mr-2" /> : <UserPlus className="w-5 h-5 mr-2" />}
+                    {isLogin ? "Entrar" : "Cadastrar"}
+                  </div>
+                )}
+              </Button>
+
+              {/* Toggle Login/Signup */}
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setErrors({});
+                    setFormData({
+                      email: "",
+                      password: "",
+                      confirmPassword: "",
+                      fullName: ""
+                    });
+                  }}
+                  className="text-yellow-300 hover:text-yellow-400 text-sm underline transition-colors"
+                >
+                  {isLogin
+                    ? "Não tem uma conta? Cadastre-se"
+                    : "Já tem uma conta? Faça login"
+                  }
+                </button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center mt-6">
+          <p className="text-yellow-400/60 text-sm">
+            © 2024 IndicaPro. Todos os direitos reservados.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default Login;
